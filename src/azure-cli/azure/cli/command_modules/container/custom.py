@@ -14,6 +14,7 @@ except ImportError:
 import platform
 import select
 import shlex
+import os
 import signal
 import sys
 import threading
@@ -652,7 +653,10 @@ def _capture_stdin(ws):
 
 
 def _start_exec_pipe(web_socket_uri, password):
-    ws = websocket.create_connection(web_socket_uri)
+    # my http_proxy environment variable is
+    # www-proxy.contoso.com:80
+    proxy_url, proxy_port = os.getenv('http_proxy').rsplit(':', maxsplit=1)
+    ws = websocket.create_connection(web_socket_uri, http_proxy_host=proxy_url, http_proxy_port=proxy_port)
 
     oldtty = termios.tcgetattr(sys.stdin)
     old_handler = signal.getsignal(signal.SIGWINCH)
